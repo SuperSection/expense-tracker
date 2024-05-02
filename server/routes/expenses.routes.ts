@@ -30,7 +30,7 @@ export const expensesRoute = new Hono()
         const expense = c.req.valid("json");
         fakeExpenses.push({ id: fakeExpenses.length + 1, ...expense });
         console.log({ expense });
-        return c.json(expense);
+        return c.json({ expense });
     })
     .get("/total-spent", (c) => {
         const totalSpent = fakeExpenses.reduce((acc, expense) => acc + expense.amount, 0);
