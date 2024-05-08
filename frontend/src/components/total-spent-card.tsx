@@ -5,26 +5,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { fetchTotalSpent } from "@/helpers/fetchTotalSpent";
+import { useQuery } from "@tanstack/react-query"; 
+import { getTotalSpent } from "@/helpers/getTotalSpent";
 
 
-export const Route = createFileRoute("/")({
-  component: Index,
-});
-
-
-function Index() {
+export function ShowcaseTotalSpent() {
   const { isPending, error, data } = useQuery({
     queryKey: ["get-total-spent"],
-    queryFn: fetchTotalSpent,
+    queryFn: getTotalSpent,
   });
 
   if (error) return "An error has occured: " + error.message;
 
   return (
-    <Card className="max-w-screen-sm m-auto dark">
+    <Card>
       <CardHeader>
         <CardTitle>Total Spent</CardTitle>
         <CardDescription>The total amount you've spent</CardDescription>

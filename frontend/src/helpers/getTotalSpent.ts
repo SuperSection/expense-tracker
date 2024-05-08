@@ -1,7 +1,7 @@
 import { api } from "@/lib/api";
 
 
-async function fetchTotalSpent() {
+async function getTotalSpent() {
     const response = await api.expenses["total-spent"].$get();
     if (!response.ok) {
         throw new Error("Server error!");
@@ -10,4 +10,4 @@ async function fetchTotalSpent() {
     return data;
 }
 
-export { fetchTotalSpent };
+export { getTotalSpent };
