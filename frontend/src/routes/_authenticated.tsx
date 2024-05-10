@@ -8,12 +8,14 @@ const Login = () => {
   return (
     <div className="flex flex-col gap-y-2 items-center">
       <p>You have to login or register</p>
-      <Button asChild>
-        <a href="/api/login">Login!</a>
-      </Button>
-      <Button asChild>
-        <a href="/api/register">Register!</a>
-      </Button>
+      <div className="flex gap-4">
+        <Button asChild>
+          <a href="/api/login">Login!</a>
+        </Button>
+        <Button asChild>
+          <a href="/api/register">Register!</a>
+        </Button>
+      </div>
     </div>
   );
 };

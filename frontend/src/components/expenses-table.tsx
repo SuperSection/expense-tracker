@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 
 import {
   Table,
@@ -10,14 +10,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getAllExpenses } from "@/helpers/getAllExpenses";
+import { getAllExpensesQueryOptions, loadingCreateExpenseQueryOptions } from "@/lib/api";
+import { DeleteExpenseButton } from "./delete-expense-button";
 
 
 export function ExpensesTable() {
-  const { isPending, error, data } = useQuery({
-    queryKey: ["get-all-expenses"],
-    queryFn: getAllExpenses,
-  });
+  const { isPending, error, data } = useSuspenseQuery(getAllExpensesQueryOptions);
+
+  const { data: loadingCreateExpense } = useQuery(loadingCreateExpenseQueryOptions);
 
   if (error) return "An error has occured: " + error.message;
 
@@ -31,15 +31,34 @@ export function ExpensesTable() {
           <TableHead>Title</TableHead>
           <TableHead>Amount</TableHead>
           <TableHead>Date</TableHead>
+          <TableHead>Delete</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
+        {loadingCreateExpense?.expense && (
+          <TableRow>
+            <TableCell className="font-medium">
+              <Skeleton className="h-4" />
+            </TableCell>
+            <TableCell>{loadingCreateExpense?.expense.title}</TableCell>
+            <TableCell>{loadingCreateExpense?.expense.amount}</TableCell>
+            <TableCell>
+              {loadingCreateExpense?.expense.date.split("T")[0]}
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4" />
+            </TableCell>
+          </TableRow>
+        )}
         {isPending
           ? Array(10)
               .fill(0)
               .map((_, i) => (
                 <TableRow key={i}>
                   <TableCell className="font-medium">
+                    <Skeleton className="h-4" />
+                  </TableCell>
+                  <TableCell>
                     <Skeleton className="h-4" />
                   </TableCell>
                   <TableCell>
@@ -59,6 +78,9 @@ export function ExpensesTable() {
                 <TableCell>{expense.title}</TableCell>
                 <TableCell>{expense.amount}</TableCell>
                 <TableCell>{expense.date.split("T")[0]}</TableCell>
+                <TableCell>
+                  <DeleteExpenseButton id={expense.id} />
+                </TableCell>
               </TableRow>
             ))}
       </TableBody>

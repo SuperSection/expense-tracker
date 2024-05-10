@@ -3,7 +3,8 @@ import { useNavigate } from "@tanstack/react-router";
 
 interface Expense {
     title: string;
-    amount: number;
+    amount: string;
+    date: string;
 }
 
 const navigate = useNavigate();

@@ -1,16 +1,23 @@
+import { toast } from "sonner";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 
-import { api } from "@/lib/api";
+import {
+  createExpense,
+  getAllExpensesQueryOptions,
+  loadingCreateExpenseQueryOptions,
+} from "@/lib/api";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { createExpenseSchema } from "@server/shared/types";
+import { CreateExpense, createExpenseSchema } from "@server/shared/types";
 
 
 export function CreateExpenseForm() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const form = useForm({
@@ -20,14 +27,40 @@ export function CreateExpenseForm() {
       amount: "",
       date: new Date().toISOString(),
     },
-    onSubmit: async ({ value }) => {
-      const response = await api.expenses.$post({ json: value });
-      if (!response.ok) {
-        throw new Error("Error creating expense!");
-      }
+    onSubmit: async ({ value }: { value: CreateExpense }) => {
+      const existingExpenses = await queryClient.ensureQueryData(
+        getAllExpensesQueryOptions
+      );
 
-      console.log(value);
       navigate({ to: "/expenses" });
+
+      // loading state
+      queryClient.setQueryData(loadingCreateExpenseQueryOptions.queryKey, {
+        expense: value,
+      });
+
+      try {
+        const newExpense = await createExpense(value);
+
+        // success state
+        queryClient.setQueryData(getAllExpensesQueryOptions.queryKey, {
+          ...existingExpenses,
+          expenses: [newExpense, ...existingExpenses.expenses],
+        });
+
+        toast("Expense Created", {
+          description: `Successfully created new expense: ${newExpense.id}`,
+        });
+
+      } catch (error) {
+        // error state
+        toast("Failed to Create Expense", {
+          description: `Server error! Try again to create an expense`,
+        });
+
+      } finally {
+        queryClient.setQueryData(loadingCreateExpenseQueryOptions.queryKey, {});
+      }
     },
   });
 
@@ -121,7 +154,7 @@ export function CreateExpenseForm() {
         selector={(state) => [state.canSubmit, state.isSubmitting]}
         children={([canSubmit, isSubmitting]) => (
           <Button type="submit" disabled={!canSubmit}>
-            {isSubmitting ? "..." : "Create Expense"}
+            {isSubmitting ? "..." : "Add Expense"}
           </Button>
         )}
       />
