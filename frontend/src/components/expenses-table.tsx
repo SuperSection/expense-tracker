@@ -28,8 +28,9 @@ export function ExpensesTable() {
       <TableHeader>
         <TableRow>
           <TableHead className="w-[100px]">Id</TableHead>
-          <TableHead colSpan={2}>Title</TableHead>
+          <TableHead>Title</TableHead>
           <TableHead>Amount</TableHead>
+          <TableHead>Date</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -47,13 +48,17 @@ export function ExpensesTable() {
                   <TableCell>
                     <Skeleton className="h-4" />
                   </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4" />
+                  </TableCell>
                 </TableRow>
               ))
           : data?.expenses.map((expense) => (
               <TableRow key={expense.id}>
                 <TableCell className="font-medium">{expense.id}</TableCell>
-                <TableCell colSpan={2}>{expense.title}</TableCell>
+                <TableCell>{expense.title}</TableCell>
                 <TableCell>{expense.amount}</TableCell>
+                <TableCell>{expense.date.split("T")[0]}</TableCell>
               </TableRow>
             ))}
       </TableBody>

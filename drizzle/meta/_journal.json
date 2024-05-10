@@ -15,6 +15,13 @@
       "when": 1715181751049,
       "tag": "0001_gigantic_revanche",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1715340119712,
+      "tag": "0002_fresh_morph",
+      "breakpoints": true
     }
   ]
 }
